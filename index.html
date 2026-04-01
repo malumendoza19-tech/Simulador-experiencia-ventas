@@ -1,0 +1,590 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Simulador de Ventas · Telefonía Móvil</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #F5F3EE;
+  --surface: #FFFFFF;
+  --surface2: #F0EDE6;
+  --surface3: #E8E4DA;
+  --ink: #1A1814;
+  --ink2: #5A5650;
+  --ink3: #9A968F;
+  --accent: #2D5BE3;
+  --accent-light: #EBF0FF;
+  --green: #1A7A4A;
+  --green-light: #E6F5ED;
+  --red: #C4321A;
+  --red-light: #FDECEA;
+  --yellow: #B07800;
+  --yellow-light: #FFF8E6;
+  --border: rgba(26,24,20,0.1);
+  --radius: 14px;
+  --shadow: 0 2px 16px rgba(0,0,0,0.08);
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { background: var(--bg); color: var(--ink); font-family: 'Inter', sans-serif; min-height: 100vh; display: flex; flex-direction: column; }
+
+header { background: var(--ink); color: #F5F3EE; padding: 16px 32px; display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.logo-wrap { display: flex; align-items: center; gap: 14px; }
+.logo-mark { width: 38px; height: 38px; background: var(--accent); border-radius: 10px; display: flex; align-items: center; justify-content: center; font-family: 'Syne', sans-serif; font-weight: 800; font-size: 18px; color: white; }
+.logo-name { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 17px; letter-spacing: 0.5px; color: #F5F3EE; }
+.logo-sub { font-size: 11px; color: rgba(245,243,238,0.4); margin-top: 1px; font-weight: 300; }
+.header-badge { font-size: 11px; padding: 4px 12px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.15); color: rgba(255,255,255,0.5); }
+
+.screen { display: none; flex: 1; }
+.screen.active { display: flex; }
+
+/* SETUP */
+#setup-screen { align-items: center; justify-content: center; padding: 48px 20px; }
+.setup-inner { max-width: 680px; width: 100%; }
+.setup-intro { margin-bottom: 40px; }
+.setup-intro h1 { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 42px; line-height: 1.05; letter-spacing: -1px; margin-bottom: 14px; }
+.setup-intro h1 em { font-style: normal; color: var(--accent); }
+.setup-intro p { font-size: 16px; color: var(--ink2); line-height: 1.65; max-width: 520px; }
+.field-block { margin-bottom: 28px; }
+.field-label { font-size: 11px; font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase; color: var(--ink3); margin-bottom: 10px; display: block; }
+.field-input { width: 100%; background: var(--surface); border: 1.5px solid var(--border); border-radius: var(--radius); padding: 14px 18px; font-family: 'Inter', sans-serif; font-size: 15px; color: var(--ink); outline: none; transition: border-color 0.2s; }
+.field-input:focus { border-color: var(--accent); }
+.scenarios-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 32px; }
+.scenario-card { background: var(--surface); border: 1.5px solid var(--border); border-radius: var(--radius); padding: 20px; cursor: pointer; transition: all 0.2s; text-align: left; }
+.scenario-card:hover, .scenario-card.active { border-color: var(--accent); background: var(--accent-light); }
+.sc-icon { font-size: 22px; margin-bottom: 8px; display: block; }
+.sc-title { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 14px; color: var(--ink); margin-bottom: 4px; }
+.sc-desc { font-size: 12px; color: var(--ink2); line-height: 1.4; }
+.btn-start { width: 100%; background: var(--ink); color: #F5F3EE; border: none; border-radius: var(--radius); padding: 17px; font-family: 'Syne', sans-serif; font-weight: 700; font-size: 17px; cursor: pointer; transition: all 0.18s; }
+.btn-start:hover { background: var(--accent); transform: translateY(-1px); }
+
+/* SIM */
+#sim-screen { flex-direction: column; max-width: 800px; width: 100%; margin: 0 auto; padding: 0 20px 24px; }
+.progress-wrap { padding: 16px 0 0; margin-bottom: 20px; }
+.progress-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+.progress-label { font-size: 12px; font-weight: 500; color: var(--ink3); }
+.progress-score { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 14px; color: var(--accent); }
+.progress-bar { height: 4px; background: var(--surface3); border-radius: 4px; overflow: hidden; }
+.progress-fill { height: 100%; background: var(--accent); border-radius: 4px; transition: width 0.4s ease; }
+
+.client-wrap { background: var(--surface); border: 1.5px solid var(--border); border-radius: var(--radius); padding: 22px 24px; margin-bottom: 8px; box-shadow: var(--shadow); }
+.client-header { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; }
+.client-avatar { width: 36px; height: 36px; background: var(--surface3); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 16px; flex-shrink: 0; }
+.client-name { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 13px; color: var(--ink); }
+.client-role { font-size: 11px; color: var(--ink3); margin-top: 1px; }
+.client-says { font-size: 15.5px; line-height: 1.65; color: var(--ink); font-style: italic; }
+.objection-tag { display: inline-block; font-size: 10px; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; padding: 3px 10px; border-radius: 20px; background: var(--yellow-light); color: var(--yellow); margin-bottom: 12px; }
+
+.stage-label { font-size: 11px; font-weight: 600; letter-spacing: 1.2px; text-transform: uppercase; color: var(--ink3); margin-bottom: 10px; margin-top: 20px; }
+.options-grid { display: flex; flex-direction: column; gap: 10px; margin-bottom: 16px; }
+.option-btn { background: var(--surface); border: 1.5px solid var(--border); border-radius: var(--radius); padding: 16px 20px; text-align: left; cursor: pointer; font-family: 'Inter', sans-serif; font-size: 14.5px; color: var(--ink); line-height: 1.5; transition: all 0.18s; display: flex; align-items: flex-start; gap: 12px; }
+.option-btn:hover { border-color: var(--accent); background: var(--accent-light); }
+.option-letter { width: 24px; height: 24px; border-radius: 6px; background: var(--surface3); display: flex; align-items: center; justify-content: center; font-family: 'Syne', sans-serif; font-weight: 700; font-size: 12px; color: var(--ink2); flex-shrink: 0; margin-top: 1px; }
+
+.feedback-box { border-radius: var(--radius); padding: 18px 20px; margin-bottom: 16px; display: none; animation: fadeIn 0.3s ease; }
+@keyframes fadeIn { from { opacity:0; transform:translateY(6px); } to { opacity:1; transform:translateY(0); } }
+.feedback-box.correct { background: var(--green-light); border: 1.5px solid rgba(26,122,74,0.25); }
+.feedback-box.partial  { background: var(--yellow-light); border: 1.5px solid rgba(176,120,0,0.25); }
+.feedback-box.wrong    { background: var(--red-light); border: 1.5px solid rgba(196,50,26,0.25); }
+.feedback-top { display: flex; align-items: center; gap: 8px; font-family: 'Syne', sans-serif; font-weight: 700; font-size: 14px; margin-bottom: 8px; }
+.feedback-box.correct .feedback-top { color: var(--green); }
+.feedback-box.partial  .feedback-top { color: var(--yellow); }
+.feedback-box.wrong    .feedback-top { color: var(--red); }
+.feedback-text { font-size: 13.5px; color: var(--ink2); line-height: 1.6; }
+.client-reaction { font-size: 13.5px; color: var(--ink); font-style: italic; margin-top: 10px; padding-top: 10px; border-top: 1px solid rgba(0,0,0,0.07); }
+
+.btn-next { background: var(--ink); color: #F5F3EE; border: none; border-radius: var(--radius); padding: 14px 24px; font-family: 'Syne', sans-serif; font-weight: 700; font-size: 15px; cursor: pointer; transition: all 0.18s; display: none; width: 100%; }
+.btn-next:hover { background: var(--accent); }
+
+.option-btn.selected-correct { border-color: var(--green); background: var(--green-light); pointer-events: none; }
+.option-btn.selected-partial  { border-color: var(--yellow); background: var(--yellow-light); pointer-events: none; }
+.option-btn.selected-wrong    { border-color: var(--red); background: var(--red-light); pointer-events: none; }
+.option-btn.disabled { opacity: 0.4; pointer-events: none; }
+.option-btn.best-answer { border-color: var(--green); }
+
+/* RESULTS */
+#result-screen { flex-direction: column; align-items: center; padding: 48px 20px; }
+.result-inner { max-width: 640px; width: 100%; }
+.result-header { text-align: center; margin-bottom: 36px; }
+.score-ring { width: 120px; height: 120px; margin: 0 auto 20px; position: relative; }
+.score-ring svg { width: 100%; height: 100%; transform: rotate(-90deg); }
+.score-ring-text { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+.score-number { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 32px; line-height: 1; }
+.score-denom { font-size: 13px; color: var(--ink3); margin-top: 2px; }
+.result-title { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 28px; margin-bottom: 8px; }
+.result-diag { font-size: 15px; color: var(--ink2); line-height: 1.6; }
+.result-sections { display: flex; flex-direction: column; gap: 16px; margin-bottom: 28px; }
+.result-card { background: var(--surface); border: 1.5px solid var(--border); border-radius: var(--radius); padding: 20px 22px; box-shadow: var(--shadow); }
+.result-card h3 { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 13px; letter-spacing: 0.5px; margin-bottom: 14px; padding-bottom: 10px; border-bottom: 1px solid var(--border); color: var(--ink); }
+.breakdown-list { display: flex; flex-direction: column; gap: 10px; }
+.breakdown-item { display: flex; align-items: center; gap: 12px; font-size: 13.5px; }
+.breakdown-step { font-weight: 500; color: var(--ink); flex: 1; }
+.breakdown-pts { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 13px; min-width: 48px; text-align: right; }
+.pts-full { color: var(--green); } .pts-half { color: var(--yellow); } .pts-zero { color: var(--red); }
+.dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+.dot.full { background: var(--green); } .dot.half { background: var(--yellow); } .dot.zero { background: var(--red); }
+.tips-list { display: flex; flex-direction: column; gap: 8px; }
+.tip-item { font-size: 13.5px; color: var(--ink2); line-height: 1.55; padding-left: 16px; position: relative; }
+.tip-item::before { content: '→'; position: absolute; left: 0; color: var(--accent); font-weight: 600; }
+.btn-retry { width: 100%; background: var(--ink); color: #F5F3EE; border: none; border-radius: var(--radius); padding: 17px; font-family: 'Syne', sans-serif; font-weight: 700; font-size: 17px; cursor: pointer; transition: all 0.18s; }
+.btn-retry:hover { background: var(--accent); transform: translateY(-1px); }
+
+@media (max-width: 560px) { .scenarios-grid { grid-template-columns: 1fr; } .setup-intro h1 { font-size: 30px; } }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo-wrap">
+    <div class="logo-mark">SV</div>
+    <div>
+      <div class="logo-name">Simulador de Ventas</div>
+      <div class="logo-sub">Telefonía Móvil · Entrenamiento</div>
+    </div>
+  </div>
+  <div class="header-badge">Sin conexión requerida</div>
+</header>
+
+<div id="setup-screen" class="screen active">
+  <div class="setup-inner">
+    <div class="setup-intro">
+      <h1>Practica tus<br><em>habilidades</em><br>de venta.</h1>
+      <p>Elige un escenario, lee lo que dice el cliente y decide cómo responder. Al terminar recibirás tu calificación y retroalimentación detallada.</p>
+    </div>
+    <div class="field-block">
+      <label class="field-label">Tu nombre</label>
+      <input class="field-input" id="agent-name" type="text" placeholder="Ej. Carlos Méndez" autocomplete="off">
+    </div>
+    <div class="field-block">
+      <label class="field-label">Elige tu escenario</label>
+      <div class="scenarios-grid" id="scenarios-grid"></div>
+    </div>
+    <button class="btn-start" onclick="startSim()">Iniciar simulación →</button>
+  </div>
+</div>
+
+<div id="sim-screen" class="screen">
+  <div class="progress-wrap">
+    <div class="progress-top">
+      <span class="progress-label" id="step-label">Etapa 1 de 5</span>
+      <span class="progress-score" id="score-label">Puntos: 0</span>
+    </div>
+    <div class="progress-bar"><div class="progress-fill" id="progress-fill" style="width:0%"></div></div>
+  </div>
+  <div class="client-wrap">
+    <div class="client-header">
+      <div class="client-avatar">🧑</div>
+      <div>
+        <div class="client-name" id="client-name">Cliente</div>
+        <div class="client-role" id="scenario-label-sim">Escenario</div>
+      </div>
+    </div>
+    <div id="objection-tag-wrap"></div>
+    <div class="client-says" id="client-says">…</div>
+  </div>
+  <div class="stage-label" id="stage-label">¿Cómo respondes?</div>
+  <div class="options-grid" id="options-grid"></div>
+  <div class="feedback-box" id="feedback-box">
+    <div class="feedback-top" id="feedback-top"></div>
+    <div class="feedback-text" id="feedback-text"></div>
+    <div class="client-reaction" id="client-reaction"></div>
+  </div>
+  <button class="btn-next" id="btn-next" onclick="nextStep()">Siguiente →</button>
+</div>
+
+<div id="result-screen" class="screen">
+  <div class="result-inner">
+    <div class="result-header">
+      <div class="score-ring">
+        <svg viewBox="0 0 100 100">
+          <circle cx="50" cy="50" r="42" fill="none" stroke="#E8E4DA" stroke-width="8"/>
+          <circle id="score-arc" cx="50" cy="50" r="42" fill="none" stroke="#2D5BE3"
+            stroke-width="8" stroke-linecap="round" stroke-dasharray="264" stroke-dashoffset="264"
+            style="transition: stroke-dashoffset 1s ease, stroke 0.5s ease"/>
+        </svg>
+        <div class="score-ring-text">
+          <div class="score-number" id="final-score">0</div>
+          <div class="score-denom">/ 100</div>
+        </div>
+      </div>
+      <div class="result-title" id="result-title">—</div>
+      <div class="result-diag" id="result-diag">—</div>
+    </div>
+    <div class="result-sections">
+      <div class="result-card">
+        <h3>Detalle por etapa</h3>
+        <div class="breakdown-list" id="breakdown-list"></div>
+      </div>
+      <div class="result-card">
+        <h3>Áreas de mejora</h3>
+        <div class="tips-list" id="tips-list"></div>
+      </div>
+    </div>
+    <button class="btn-retry" onclick="resetSim()">← Intentar de nuevo</button>
+  </div>
+</div>
+
+<script>
+const SCENARIOS = [
+  {
+    id:'dudas', icon:'🤔', title:'Cliente con dudas', desc:'Indeciso sobre cambiar de compañía', clientName:'Roberto, 34 años',
+    steps:[
+      { stage:'Abordaje inicial', clientSays:'"Nada más estoy viendo… no sé si me conviene cambiar de compañía."', objectionTag:null,
+        options:[
+          { letter:'A', text:'¡Qué bueno que llegó! Tenemos la mejor oferta del mercado, ¿cuándo quiere activar?', score:0, type:'wrong', feedback:'Presionar al inicio genera rechazo. El cliente aún no está listo para decidir.', tip:'Escucha antes de ofrecer. La prisa ahuyenta al cliente.', reaction:'"Oye, tranquilo, solo estoy viendo…"' },
+          { letter:'B', text:'Con gusto le ayudo. ¿Me puede platicar qué es lo que más le importa en su servicio de telefonía?', score:2, type:'correct', feedback:'Excelente abordaje consultivo. Mostraste interés genuino y abriste el diálogo.', tip:null, reaction:'"Pues… lo que más me importa es tener buena señal y que no me cobren de más."' },
+          { letter:'C', text:'Tenemos muchos planes, ¿qué presupuesto tiene?', score:1, type:'partial', feedback:'Ir directo al presupuesto sin explorar necesidades puede cerrar la conversación.', tip:'Empieza por necesidades, no por precio.', reaction:'"No sé, dependería de qué me ofrecen."' }
+        ]
+      },
+      { stage:'Descubrimiento', clientSays:'"Lo que más me importa es buena señal y no pagar tanto. Con mi compañía actual a veces se cae."', objectionTag:null,
+        options:[
+          { letter:'A', text:'Entiendo perfectamente. ¿Con qué frecuencia le falla la señal? ¿Más en casa o cuando sale?', score:2, type:'correct', feedback:'Preguntas de profundidad que muestran interés real y generan confianza.', tip:null, reaction:'"En casa casi no, pero cuando salgo al trabajo a veces no tengo señal."' },
+          { letter:'B', text:'No se preocupe, nuestra señal es la mejor. Le garantizo que va a estar feliz.', score:0, type:'wrong', feedback:'Las garantías vacías sin respaldo generan desconfianza.', tip:'Evita promesas sin base. Apóyate en datos concretos.', reaction:'"¿Y cómo sabe que en mi zona hay buena señal?"' },
+          { letter:'C', text:'Tenemos cobertura en el 95% del país, así que eso está resuelto.', score:1, type:'partial', feedback:'El dato es bueno, pero no conectaste con su situación particular.', tip:'Conecta los datos con la experiencia específica del cliente.', reaction:'"Hmm, ojalá funcione bien donde yo vivo…"' }
+        ]
+      },
+      { stage:'Objeción de precio', clientSays:'"En otro lado me dijeron que me dan más datos por menos dinero. ¿Por qué elegirlos a ustedes?"', objectionTag:'Objeción de precio',
+        options:[
+          { letter:'A', text:'Le entiendo. ¿Me permite preguntar qué oferta le dieron? Quiero asegurarme de que estemos comparando lo mismo, porque a veces la letra chica hace la diferencia.', score:2, type:'correct', feedback:'Reconociste la objeción, mostraste seguridad y pediste información para comparar con inteligencia.', tip:null, reaction:'"Me dijeron 10 GB por 150 pesos, pero no sé si incluye llamadas."' },
+          { letter:'B', text:'No se fíe de esas ofertas, generalmente tienen muchas restricciones.', score:0, type:'wrong', feedback:'Atacar a la competencia sin argumentos propios genera desconfianza.', tip:'Nunca hables mal de la competencia. Compara con datos propios.', reaction:'"Oye, no tienes por qué hablar así de ellos…"' },
+          { letter:'C', text:'Nuestros planes tienen muy buena relación precio-calidad.', score:1, type:'partial', feedback:'Respuesta demasiado vaga. No genera diferenciación real.', tip:'Sé específico: qué incluye el plan y por qué vale la pena.', reaction:'"Sí, eso dicen todos…"' }
+        ]
+      },
+      { stage:'Propuesta y cierre', clientSays:'"Mmmh no lo había pensado así. ¿Y cómo sería el proceso para cambiarme? ¿Es complicado?"', objectionTag:null,
+        options:[
+          { letter:'A', text:'Para nada. Solo necesita su INE y su número si quiere conservarlo. El proceso dura unos minutos y yo le explico cada paso. ¿Le gustaría que empezáramos hoy?', score:2, type:'correct', feedback:'Perfecto cierre consultivo: simplificaste el proceso, ofreciste acompañamiento y pediste el compromiso.', tip:null, reaction:'"Bueno… sí, la verdad sí me animo. ¿Cómo le hacemos?"' },
+          { letter:'B', text:'Hay que llenar unos formatos y esperar unos días para la portabilidad.', score:0, type:'wrong', feedback:'Hiciste que el proceso sonara difícil y lento.', tip:'Siempre presenta el proceso como simple y acompañado.', reaction:'"Uf, suena complicado… déjeme pensarlo."' },
+          { letter:'C', text:'Es un proceso estándar, no se preocupe.', score:1, type:'partial', feedback:'Tranquilizaste al cliente pero no pediste el compromiso ni explicaste los pasos.', tip:'Después de resolver la duda, invita a dar el siguiente paso.', reaction:'"Ok… ¿y cuánto tiempo tarda más o menos?"' }
+        ]
+      },
+      { stage:'Activación y validación', clientSays:'"Ya me decidí. ¿Cómo sé que el servicio va a funcionar bien con mi celular?"', objectionTag:null,
+        options:[
+          { letter:'A', text:'Primero verifico que su equipo esté liberado y sea compatible. Luego activo su SIM con el plan elegido, insertamos el chip y le pido que envíe un SMS al número de validación para confirmar que todo quedó activo con sus beneficios correctos.', score:2, type:'correct', feedback:'Proceso técnico completo y en orden. El cliente sabe exactamente qué va a pasar.', tip:null, reaction:'"Qué bien, se nota que sabe lo que hace. Gracias."' },
+          { letter:'B', text:'No se preocupe, con cualquier celular moderno funciona.', score:0, type:'wrong', feedback:'Omitiste pasos críticos: verificación, activación y validación del servicio.', tip:'Siempre ejecuta el checklist completo de activación.', reaction:'"¿Y si luego no funciona? ¿Qué hago?"' },
+          { letter:'C', text:'Insertamos el chip y listo, en unos minutos tiene señal.', score:1, type:'partial', feedback:'Mencionaste la inserción pero omitiste verificar el equipo y validar el servicio.', tip:'El proceso correcto: verificación → activación → inserción → validación.', reaction:'"Ok… espero que funcione bien."' }
+        ]
+      }
+    ]
+  },
+  {
+    id:'caro', icon:'💸', title:'Plan muy caro', desc:'Cliente insatisfecho con su costo actual', clientName:'Patricia, 28 años',
+    steps:[
+      { stage:'Abordaje inicial', clientSays:'"Vengo porque mi plan está carísimo y quiero ver si hay algo mejor."', objectionTag:null,
+        options:[
+          { letter:'A', text:'Claro, aquí tenemos planes más baratos. ¿Cuánto paga ahorita?', score:1, type:'partial', feedback:'Fuiste al precio de inmediato. Falta explorar qué valora antes de hablar de costo.', tip:'Primero entiende qué usa y qué necesita, luego habla de precio.', reaction:'"Pago como 350 pesos, pero no sé si realmente uso todo."' },
+          { letter:'B', text:'Entiendo su frustración. ¿Me platica qué incluye su plan actual y qué es lo que más usa?', score:2, type:'correct', feedback:'Excelente. Primero escuchas para hacer una comparación real de valor.', tip:null, reaction:'"Tengo llamadas ilimitadas y 15 GB, pero solo uso como 5 GB al mes."' },
+          { letter:'C', text:'¡Está en el lugar correcto! Nuestros planes son los más económicos.', score:0, type:'wrong', feedback:'Afirmación sin base antes de conocer su situación. Puede sonar exagerado.', tip:'Evita superlativas sin fundamento. Gana credibilidad primero.', reaction:'"¿Más baratos que todos? No sé si creerle…"' }
+        ]
+      },
+      { stage:'Análisis de necesidades', clientSays:'"La verdad uso como 5 GB al mes y hago pocas llamadas. Pago 350 pesos y siento que es mucho."', objectionTag:null,
+        options:[
+          { letter:'A', text:'Entonces está pagando por cosas que no usa. Con un plan ajustado a lo que realmente consume podría ahorrar bastante. ¿Le interesa que revisemos opciones?', score:2, type:'correct', feedback:'Conectaste el diagnóstico con la solución. El cliente se siente entendido.', tip:null, reaction:'"Sí, exacto, eso es justo lo que siento. Sí me interesa."' },
+          { letter:'B', text:'Nuestro plan básico cuesta 150 pesos.', score:1, type:'partial', feedback:'El dato es útil pero no conectaste con su situación. Falta el "por eso le conviene".', tip:'Primero el diagnóstico, luego la solución.', reaction:'"Ok… ¿y qué incluye ese plan?"' },
+          { letter:'C', text:'Sí, 350 es mucho. Nosotros somos más baratos.', score:0, type:'wrong', feedback:'Atacar al precio de la competencia sin proponer valor propio no es efectivo.', tip:'Habla de lo que tú ofreces, no de lo malo del otro.', reaction:'"¿Pero van a tener buena señal?"' }
+        ]
+      },
+      { stage:'Objeción de desconfianza', clientSays:'"¿Y la cobertura? No conozco bien esta compañía. ¿Cómo sé que va a funcionar donde yo vivo?"', objectionTag:'Objeción de desconfianza',
+        options:[
+          { letter:'A', text:'Es una pregunta muy válida. Nuestra red tiene cobertura 4G LTE en el 95% del territorio nacional. ¿Me dice en qué colonia vive para confirmárselo con certeza?', score:2, type:'correct', feedback:'Reconociste la duda, diste un dato concreto y ofreciste verificarlo para su caso.', tip:null, reaction:'"Vivo en [zona]. Sí me gustaría que lo confirmara."' },
+          { letter:'B', text:'Tenemos muy buena señal, no se preocupe.', score:0, type:'wrong', feedback:'Sin dato concreto, esta respuesta no genera confianza.', tip:'Siempre apoya tus afirmaciones con datos verificables.', reaction:'"Eso me dicen todos y luego no hay señal…"' },
+          { letter:'C', text:'Somos una red respaldada por infraestructura de primer nivel.', score:1, type:'partial', feedback:'Suena a marketing genérico. El cliente necesita algo concreto.', tip:'Los datos específicos convencen más que los adjetivos.', reaction:'"Sí, pero ¿en mi zona específicamente?"' }
+        ]
+      },
+      { stage:'Cierre con portabilidad', clientSays:'"Me convence. ¿Puedo quedarme con mi número o tendría que cambiar?"', objectionTag:'Objeción de portabilidad',
+        options:[
+          { letter:'A', text:'Sí, conserva su número. Se hace una portabilidad: le asignamos un número temporal mientras el proceso corre, y al finalizar su número original queda activo con nosotros. No pierde nada.', score:2, type:'correct', feedback:'Explicación completa y tranquilizadora del proceso de portabilidad.', tip:null, reaction:'"Ah, qué bien. Entonces sí me animo."' },
+          { letter:'B', text:'Sí puede portarse, el proceso tarda unos días.', score:1, type:'partial', feedback:'Confirmaste que se puede pero no explicaste el número transitorio.', tip:'Explica el proceso completo para evitar sorpresas.', reaction:'"¿Y durante esos días me quedo sin servicio?"' },
+          { letter:'C', text:'La portabilidad es un proceso de la compañía, nosotros solo iniciamos el trámite.', score:0, type:'wrong', feedback:'Evadiste la pregunta y no diste información útil.', tip:'Tú eres el experto. El cliente confía en ti para entender el proceso.', reaction:'"Entonces… ¿conservo mi número o no?"' }
+        ]
+      },
+      { stage:'Validación del servicio', clientSays:'"Ya hicimos todo. ¿Cómo sé que el plan quedó bien activado?"', objectionTag:null,
+        options:[
+          { letter:'A', text:'Le pido que envíe un SMS al número de validación con la palabra SALDO. Así confirmamos que el servicio está activo y que sus beneficios quedaron aplicados correctamente.', score:2, type:'correct', feedback:'Proceso de validación correcto. El cliente tiene certeza de que todo quedó bien.', tip:null, reaction:'"Perfecto, lo hago ahorita mismo. Muchas gracias."' },
+          { letter:'B', text:'Ya quedó, puede intentar hacer una llamada para probarlo.', score:1, type:'partial', feedback:'Probar con llamada no valida los beneficios del plan. El SMS de validación es el proceso correcto.', tip:'El SMS al número de validación es el método oficial para confirmar beneficios.', reaction:'"Ok… espero que los datos también estén bien."' },
+          { letter:'C', text:'En unos minutos debería tener señal, ya está todo listo.', score:0, type:'wrong', feedback:'No validaste el servicio. Esto puede generar problemas y mala experiencia.', tip:'Nunca termines sin validar. Es el paso más importante del cierre.', reaction:'"¿Y si luego no funciona bien, a quién llamo?"' }
+        ]
+      }
+    ]
+  },
+  {
+    id:'numero', icon:'📲', title:'Conservar número', desc:'Cliente que teme perder su número', clientName:'Ernesto, 45 años',
+    steps:[
+      { stage:'Abordaje inicial', clientSays:'"Vengo a preguntar por sus planes, pero lo que más me preocupa es no perder mi número. Lo tengo desde hace más de 10 años."', objectionTag:'Objeción de portabilidad',
+        options:[
+          { letter:'A', text:'Entiendo perfectamente, ese número es importante. La buena noticia es que puede conservarlo. ¿Me permite contarle cómo funciona el proceso?', score:2, type:'correct', feedback:'Validaste la preocupación y ofreciste solución de inmediato. Excelente manejo.', tip:null, reaction:'"Sí, por favor. Eso es lo que más me tiene dudando."' },
+          { letter:'B', text:'Sí puede conservar su número, eso no es problema.', score:1, type:'partial', feedback:'Correcto pero escueto. No mostraste empatía ni explicaste el proceso.', tip:'Valida la emoción del cliente antes de dar la respuesta técnica.', reaction:'"¿Y cómo funciona? ¿No me quedo sin servicio?"' },
+          { letter:'C', text:'La portabilidad es el proceso para cambiar de compañía.', score:0, type:'wrong', feedback:'Respuesta técnica y fría que no atiende la preocupación emocional del cliente.', tip:'El cliente quiere saber si conserva su número, no la definición de portabilidad.', reaction:'"Sí, eso ya lo sé… ¿pero conservo mi número o no?"' }
+        ]
+      },
+      { stage:'Explicación de portabilidad', clientSays:'"¿Pero durante el proceso me quedo sin número? No puedo quedarme incomunicado."', objectionTag:'Objeción de portabilidad',
+        options:[
+          { letter:'A', text:'Durante el proceso le asignamos un número transitorio para que nunca pierda la comunicación. Al terminar la portabilidad, ese número se reemplaza por su número original.', score:2, type:'correct', feedback:'Explicación completa y tranquilizadora. El cliente entiende exactamente qué va a pasar.', tip:null, reaction:'"Ah, qué bien. Siempre voy a tener número activo. Eso me da más confianza."' },
+          { letter:'B', text:'El proceso es rápido, no se preocupe.', score:0, type:'wrong', feedback:'No respondiste la pregunta. El cliente necesita saber qué pasa con su comunicación.', tip:'Siempre explica el número transitorio para evitar el miedo a quedarse incomunicado.', reaction:'"Sí, pero ¿cuánto es rápido? ¿Horas? ¿Días?"' },
+          { letter:'C', text:'Hay un periodo donde puede tener el servicio limitado mientras corre el proceso.', score:0, type:'wrong', feedback:'Esta respuesta genera más miedo del necesario. El número transitorio evita eso.', tip:'El número transitorio garantiza continuidad. Explícalo siempre.', reaction:'"¿Limitado? No, gracias, mejor me quedo como estoy…"' }
+        ]
+      },
+      { stage:'Objeción de tiempo', clientSays:'"¿Y cuánto tiempo tarda todo eso? No quiero perder el día aquí."', objectionTag:'Objeción de tiempo',
+        options:[
+          { letter:'A', text:'El proceso en el punto de venta dura unos minutos. La portabilidad corre en paralelo y usted desde el primer momento tiene servicio activo. No tiene que esperar aquí mientras tanto.', score:2, type:'correct', feedback:'Resolviste la objeción de tiempo con claridad y eliminaste el miedo a perder el día.', tip:null, reaction:'"Ah, entonces no me quedo horas aquí. Bien, sí le entro."' },
+          { letter:'B', text:'La portabilidad puede tardar hasta 24 horas hábiles.', score:1, type:'partial', feedback:'El dato es correcto pero puede asustar. Falta aclarar que el servicio no se interrumpe.', tip:'Acompaña los tiempos técnicos con la garantía de continuidad del servicio.', reaction:'"24 horas… eso es mucho, ¿no?"' },
+          { letter:'C', text:'No se preocupe, es rápido.', score:0, type:'wrong', feedback:'"Rápido" sin dato concreto no convence a un cliente que valora su tiempo.', tip:'Sé específico con los tiempos. La vaguedad genera desconfianza.', reaction:'"¿Rápido cuánto? ¿Minutos? ¿Horas?"' }
+        ]
+      },
+      { stage:'Propuesta comercial', clientSays:'"Ok, me convence lo del número. ¿Y qué plan me recomienda?"', objectionTag:null,
+        options:[
+          { letter:'A', text:'Antes de recomendarle algo, ¿me dice cuántos datos usa al mes y si hace muchas llamadas? Así le propongo el plan que más le conviene a usted.', score:2, type:'correct', feedback:'Consultivo al 100%. No asumes, preguntas. La recomendación será personalizada.', tip:null, reaction:'"Uso como 8 GB y hago varias llamadas al día por trabajo."' },
+          { letter:'B', text:'Le recomiendo nuestro plan intermedio, tiene buena relación precio-calidad.', score:1, type:'partial', feedback:'Diste una recomendación sin conocer sus necesidades. Puede no ser lo más adecuado.', tip:'Primero necesidades, luego recomendación. Siempre.', reaction:'"¿Y si ese plan no me alcanza para lo que uso?"' },
+          { letter:'C', text:'Tenemos varios planes desde 100 hasta 400 pesos.', score:0, type:'wrong', feedback:'Listar precios sin orientar no es venta consultiva, es un catálogo.', tip:'El cliente quiere una recomendación fundamentada, no opciones.', reaction:'"Sí, pero ¿cuál me recomienda?"' }
+        ]
+      },
+      { stage:'Activación y cierre', clientSays:'"Listo, ya me convencí. ¿Qué necesito para activar ahorita?"', objectionTag:null,
+        options:[
+          { letter:'A', text:'Solo su INE. Verifico que su equipo esté liberado, activo su SIM con el plan elegido, insertamos el chip y al final valido el servicio con un SMS para confirmar que sus beneficios quedaron correctamente aplicados.', score:2, type:'correct', feedback:'Checklist completo: documento, verificación de equipo, activación, inserción y validación.', tip:null, reaction:'"Perfecto, aquí tiene mi INE. Muchas gracias por la atención."' },
+          { letter:'B', text:'Su INE y listo, en un momento tiene su SIM activa.', score:1, type:'partial', feedback:'Mencionaste el documento pero omitiste verificar el equipo y validar el servicio.', tip:'El proceso completo protege al cliente y a ti. No lo acortes.', reaction:'"¿Y cómo sé que quedó bien?"' },
+          { letter:'C', text:'Nada más me da sus datos y ya.', score:0, type:'wrong', feedback:'Respuesta incompleta que puede derivar en activaciones con problemas.', tip:'Un proceso bien explicado da confianza y evita reclamaciones.', reaction:'"¿No necesitan mi INE o algo así?"' }
+        ]
+      }
+    ]
+  },
+  {
+    id:'tiempo', icon:'⏱️', title:'Cliente con prisa', desc:'Poco tiempo disponible para atender', clientName:'Sofía, 31 años',
+    steps:[
+      { stage:'Abordaje urgente', clientSays:'"Mire, tengo prisa. Solo quiero saber rápido si me conviene cambiarme con ustedes o no."', objectionTag:'Objeción de tiempo',
+        options:[
+          { letter:'A', text:'Entendido. Dígame dos cosas rápido: ¿cuántos datos usa al mes y qué paga ahorita? Con eso le digo en 2 minutos si le conviene.', score:2, type:'correct', feedback:'Adaptaste tu estilo al ritmo del cliente. Dos preguntas clave, sin rodeos.', tip:null, reaction:'"Uso 6 GB y pago 280 pesos al mes."' },
+          { letter:'B', text:'Claro, siéntese y le explico todo sobre nuestros planes.', score:0, type:'wrong', feedback:'Ignoraste la prisa del cliente. Esto genera fricción inmediata.', tip:'Cuando el cliente tiene prisa, adapta el ritmo. No lo ignores.', reaction:'"No tengo tiempo para sentarme. ¿Me puede dar la info rápido?"' },
+          { letter:'C', text:'Le doy un folleto para que lo vea con calma después.', score:0, type:'wrong', feedback:'Perdiste la venta. El cliente está frente a ti listo para decidir.', tip:'Un cliente con prisa es una oportunidad: ve al grano, no lo postergues.', reaction:'"No, si lo quería saber ahorita… gracias."' }
+        ]
+      },
+      { stage:'Propuesta directa', clientSays:'"6 GB y 280 pesos. ¿Tienen algo mejor?"', objectionTag:null,
+        options:[
+          { letter:'A', text:'Sí. Por menos puede tener un plan similar o con más datos, sin costos ocultos. ¿Le hago la comparación en un minuto?', score:2, type:'correct', feedback:'Respuesta directa, con beneficio claro y cierre de acción inmediata.', tip:null, reaction:'"Sí, pero rápido por favor."' },
+          { letter:'B', text:'Depende de lo que quiera, tenemos varios planes…', score:0, type:'wrong', feedback:'Vaguedad que frustra a un cliente con prisa.', tip:'Con clientes de poco tiempo: una propuesta concreta, no un menú.', reaction:'"No tengo tiempo para ver varios planes. ¿Sí o no tienen algo mejor?"' },
+          { letter:'C', text:'Nuestros precios son competitivos en el mercado.', score:1, type:'partial', feedback:'No respondiste directamente si tienen algo mejor para su caso.', tip:'El cliente preguntó algo específico. Responde específico.', reaction:'"Ok, ¿pero cuánto costaría un plan similar al mío?"' }
+        ]
+      },
+      { stage:'Objeción de compatibilidad', clientSays:'"¿Y mi celular funciona con su SIM? No quiero que luego haya problemas."', objectionTag:'Objeción de compatibilidad',
+        options:[
+          { letter:'A', text:'Lo verificamos ahorita mismo en menos de un minuto. ¿Me deja ver su equipo? Si está liberado y es compatible con 4G, no hay ningún problema.', score:2, type:'correct', feedback:'Resolviste la duda con acción inmediata. No prometiste, verificaste.', tip:null, reaction:'"Sí, aquí está. Espero que sí funcione."' },
+          { letter:'B', text:'Con la mayoría de los equipos modernos funciona sin problema.', score:1, type:'partial', feedback:'Correcto en general, pero no verificaste su equipo específico.', tip:'La verificación del equipo es un paso del proceso. Hazla siempre.', reaction:'"¿Y el mío en particular?"' },
+          { letter:'C', text:'No se preocupe, seguro funciona.', score:0, type:'wrong', feedback:'Garantizar algo sin verificar puede generar un problema real.', tip:'Nunca garantices compatibilidad sin verificar. Es un riesgo para el cliente y para ti.', reaction:'"¿Y si luego no funciona? ¿Qué hago?"' }
+        ]
+      },
+      { stage:'Cierre rápido', clientSays:'"Ok, está bien. ¿Cuánto tiempo tarda hacer todo el proceso?"', objectionTag:null,
+        options:[
+          { letter:'A', text:'El proceso completo, incluyendo verificación del equipo y validar que el servicio quedó bien, tarda unos 10 minutos. Si quiere portabilidad, eso corre en paralelo sin interrumpir su servicio.', score:2, type:'correct', feedback:'Tiempo específico, proceso claro, y resolviste la duda de portabilidad de forma proactiva.', tip:null, reaction:'"10 minutos está bien. Sí le entro, ¿qué necesito?"' },
+          { letter:'B', text:'Es rápido, no se preocupe.', score:0, type:'wrong', feedback:'"Rápido" no es un tiempo. El cliente con prisa necesita saber exactamente cuánto.', tip:'Con clientes de poco tiempo, sé preciso. Vago no funciona.', reaction:'"¿Rápido cuánto? ¿5 minutos? ¿Una hora?"' },
+          { letter:'C', text:'Depende, a veces hay fila y puede tardarse más.', score:0, type:'wrong', feedback:'Respuesta que genera incertidumbre y puede hacer que el cliente se vaya.', tip:'Controla la narrativa. Dile un tiempo estimado con seguridad.', reaction:'"No, si no tengo tiempo para esperar. Regreso otro día."' }
+        ]
+      },
+      { stage:'Validación exprés', clientSays:'"Ya quedó el chip. ¿Ya puedo irme o falta algo?"', objectionTag:null,
+        options:[
+          { letter:'A', text:'Un último paso, tarda 30 segundos: envíe un SMS al número de validación con la palabra SALDO para confirmar que su servicio y beneficios quedaron activos.', score:2, type:'correct', feedback:'Validación completa aunque el cliente tiene prisa. Perfectamente ejecutado.', tip:null, reaction:'"Qué bueno que me dijo. Ya lo mandé y sí llegó la confirmación. ¡Gracias!"' },
+          { letter:'B', text:'Ya está todo listo, puede irse.', score:0, type:'wrong', feedback:'Omitiste la validación. Si hay un error, el cliente lo descubrirá solo y sin apoyo.', tip:'La validación siempre va, aunque el cliente tenga prisa. Son 30 segundos.', reaction:'[El cliente se va. Al día siguiente llama porque no le funcionan los datos.]' },
+          { letter:'C', text:'Le recomendaría llamar a soporte si tiene algún problema.', score:0, type:'wrong', feedback:'Transferiste el problema a soporte en lugar de resolverlo en el momento.', tip:'La validación en punto de venta evita llamadas a soporte. Hazla siempre.', reaction:'"¿O sea que puede haber problemas? No me da mucha confianza…"' }
+        ]
+      }
+    ]
+  },
+  {
+    id:'recompra', icon:'🔄', title:'Cliente indeciso', desc:'Ya casi convencido pero frena en el último momento', clientName:'Miguel, 52 años',
+    steps:[
+      { stage:'Abordaje inicial', clientSays:'"Ya vine la semana pasada a preguntar. Todavía no me decido… sigo pensándolo."', objectionTag:'Objeción de cambio',
+        options:[
+          { letter:'A', text:'Qué bueno que regresó. ¿Me puede platicar qué es lo que todavía le genera duda? Quiero asegurarme de que tome la mejor decisión para usted.', score:2, type:'correct', feedback:'Mostraste interés genuino sin presionar. Abriste el espacio para identificar la objeción real.', tip:null, reaction:'"La verdad es que me da miedo que el servicio no sea tan bueno como el que tengo."' },
+          { letter:'B', text:'¡Pues ya decídase! La oferta no va a durar para siempre.', score:0, type:'wrong', feedback:'Presión falsa que genera rechazo en un cliente que ya está dudando.', tip:'La urgencia artificial daña la confianza. Usa escucha activa, no presión.', reaction:'"Pues si me presionan así, mejor busco en otro lado."' },
+          { letter:'C', text:'Tenemos muy buenas promociones esta semana.', score:1, type:'partial', feedback:'No atendiste la razón de su duda. Irte a promociones no resuelve su indecisión.', tip:'Primero identifica la objeción real, luego puedes mencionar promociones si aplica.', reaction:'"Sí, pero no es el precio lo que me tiene dudando…"' }
+        ]
+      },
+      { stage:'Manejo del miedo al cambio', clientSays:'"Me da miedo que el servicio no sea tan bueno. Con mi compañía actual ya sé cómo funciona."', objectionTag:'Objeción de desconfianza',
+        options:[
+          { letter:'A', text:'Ese miedo es muy común y válido. La buena noticia es que conserva su número, y si tiene algún inconveniente estamos aquí para resolverlo. ¿Qué sería lo mínimo que necesitaría ver para sentirse seguro?', score:2, type:'correct', feedback:'Validaste el miedo, ofreciste seguridad y preguntaste qué necesita para decidir. Manejo experto.', tip:null, reaction:'"Pues que me aseguren que en mi zona hay buena señal."' },
+          { letter:'B', text:'Nuestro servicio es excelente, no tiene nada que temer.', score:0, type:'wrong', feedback:'Decir que eres excelente sin prueba no reduce el miedo.', tip:'El miedo se reduce con evidencia y garantías, no con adjetivos.', reaction:'"Eso dicen todos… dame una razón concreta."' },
+          { letter:'C', text:'El cambio siempre da miedo al principio pero luego se acostumbra.', score:1, type:'partial', feedback:'Empatizaste pero no ofreciste ninguna solución o garantía concreta.', tip:'Después de validar la emoción, ofrece algo concreto que reduzca el riesgo.', reaction:'"Sí, pero ¿qué pasa si el servicio es peor?"' }
+        ]
+      },
+      { stage:'Verificación de cobertura', clientSays:'"Si me garantizan buena señal en mi zona, ya me convencería. ¿Cómo me comprueban eso?"', objectionTag:null,
+        options:[
+          { letter:'A', text:'Podemos verificar la cobertura en su zona exacta. Dígame su código postal o colonia y le muestro la cobertura disponible en este momento.', score:2, type:'correct', feedback:'Solución inmediata, verificable y sin promesas vacías. Eso genera confianza real.', tip:null, reaction:'"Mi colonia es [zona]. Sí, me gustaría verlo."' },
+          { letter:'B', text:'Tenemos cobertura en todo el país, no hay problema.', score:1, type:'partial', feedback:'El dato general no resuelve la duda específica del cliente sobre su zona.', tip:'Siempre verifica la cobertura para la zona específica del cliente.', reaction:'"Sí, pero ¿en mi colonia en particular?"' },
+          { letter:'C', text:'Confíe en nosotros, estamos en muchos lugares.', score:0, type:'wrong', feedback:'"Confíe en nosotros" no es un argumento. El cliente necesita evidencia.', tip:'La confianza se construye con datos, no con peticiones de fe.', reaction:'"¿Pero específicamente dónde? Necesito algo más concreto."' }
+        ]
+      },
+      { stage:'Transparencia en precio', clientSays:'"¿Y cuánto me va a costar en total? No quiero sorpresas en la factura."', objectionTag:'Objeción de precio',
+        options:[
+          { letter:'A', text:'El plan que le recomiendo incluye [X GB], llamadas y [beneficios] por [precio] mensuales, sin costos ocultos. Lo que ve es lo que paga, sin letras chicas.', score:2, type:'correct', feedback:'Transparencia total. Eso es exactamente lo que un cliente desconfiado necesita escuchar.', tip:null, reaction:'"Me gusta que sea directo. Eso me da más confianza."' },
+          { letter:'B', text:'Depende del plan que elija, los precios varían.', score:0, type:'wrong', feedback:'Evasiva que confirma el miedo a las sorpresas del cliente.', tip:'Si el cliente pide claridad en precios, dala. Sin rodeos.', reaction:'"¿O sea que pueden cambiar? Eso es justo lo que no quiero."' },
+          { letter:'C', text:'Nuestros planes son muy competitivos y transparentes.', score:1, type:'partial', feedback:'El adjetivo no reemplaza al número. El cliente quiere cifras concretas.', tip:'Cuando preguntan por precio, di el precio. Con todo incluido.', reaction:'"Sí, pero ¿cuánto exactamente?"' }
+        ]
+      },
+      { stage:'Cierre y activación', clientSays:'"Ya me convencí. Hágalo. ¿Qué hace primero?"', objectionTag:null,
+        options:[
+          { letter:'A', text:'Primero verifico que su equipo esté liberado y compatible. Luego activo su SIM con el plan elegido, insertamos el chip y validamos que el servicio y sus beneficios quedaron activos. ¿Tiene su INE a la mano?', score:2, type:'correct', feedback:'Proceso completo explicado en orden. El cliente sabe exactamente qué viene.', tip:null, reaction:'"Sí, aquí está. Muchas gracias por su paciencia."' },
+          { letter:'B', text:'Dame su INE y empezamos.', score:1, type:'partial', feedback:'Empezaste bien pero no explicaste el proceso completo.', tip:'Explicar el proceso da confianza. Este cliente lo necesita especialmente.', reaction:'"Ok… ¿y luego qué sigue?"' },
+          { letter:'C', text:'Aquí tiene su chip, insértelo en su equipo.', score:0, type:'wrong', feedback:'Saltaste la verificación del equipo y el proceso de activación.', tip:'Nunca saltes la verificación del equipo. Es el primer paso obligatorio.', reaction:'"¿No me van a registrar ni nada?"' }
+        ]
+      }
+    ]
+  }
+];
+
+const TIPS = {
+  'Abordaje inicial':           'Inicia siempre con una pregunta que descubra las necesidades del cliente antes de ofrecer cualquier producto.',
+  'Abordaje urgente':           'Adapta tu ritmo al del cliente. Con clientes de prisa: dos preguntas clave, propuesta directa.',
+  'Descubrimiento':             'Haz preguntas de profundidad para entender la situación real del cliente.',
+  'Análisis de necesidades':    'Conecta el diagnóstico del cliente directamente con la solución que le propones.',
+  'Objeción de precio':         'Ante objeciones de precio, primero entiende con qué compara antes de responder.',
+  'Manejo del miedo al cambio': 'Valida el miedo, ofrece garantías concretas y pregunta qué necesitaría para sentirse seguro.',
+  'Objeción de compatibilidad': 'Siempre verifica el equipo en el momento. No prometas compatibilidad sin comprobarlo.',
+  'Objeción de tiempo':         'Sé preciso con tiempos. "Rápido" no es un tiempo. Usa minutos concretos.',
+  'Explicación de portabilidad':'Siempre menciona el número transitorio para que el cliente no tema quedarse incomunicado.',
+  'Verificación de cobertura':  'Verifica la cobertura en la zona específica del cliente. Los datos generales no convencen.',
+  'Propuesta directa':          'Con clientes decididos: una propuesta concreta, no un menú de opciones.',
+  'Propuesta y cierre':         'Después de resolver objeciones, simplifica el proceso y pide el compromiso.',
+  'Propuesta comercial':        'Primero necesidades, luego recomendación. Nunca al revés.',
+  'Transparencia en precio':    'Cuando preguntan precio, da el número exacto con todo incluido. Sin rodeos.',
+  'Cierre con portabilidad':    'Explica el proceso completo: número transitorio, tiempo y continuidad del servicio.',
+  'Cierre rápido':              'Sé preciso con tiempos. Menciona la portabilidad proactivamente.',
+  'Cierre y activación':        'El proceso correcto: verificación → activación → inserción → validación.',
+  'Activación y validación':    'El proceso correcto: verificar equipo → activar SIM → insertar chip → validar con SMS.',
+  'Activación y cierre':        'No acortes el proceso. Verificación + activación + inserción + validación = cliente satisfecho.',
+  'Validación del servicio':    'El SMS de validación es obligatorio. Confirma que los beneficios quedaron activos.',
+  'Validación exprés':          'La validación siempre va, aunque el cliente tenga prisa. Son 30 segundos que evitan problemas.',
+};
+
+let currentScenario = null, currentStep = 0, totalScore = 0, maxScore = 0, stepScores = [], agentName = '';
+
+function buildSetup() {
+  const grid = document.getElementById('scenarios-grid');
+  SCENARIOS.forEach((sc, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'scenario-card' + (i === 0 ? ' active' : '');
+    btn.dataset.id = sc.id;
+    btn.innerHTML = `<span class="sc-icon">${sc.icon}</span><div class="sc-title">${sc.title}</div><div class="sc-desc">${sc.desc}</div>`;
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.scenario-card').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+    });
+    grid.appendChild(btn);
+  });
+}
+
+function startSim() {
+  agentName = document.getElementById('agent-name').value.trim() || 'Agente';
+  const activeBtn = document.querySelector('.scenario-card.active');
+  if (!activeBtn) return;
+  currentScenario = SCENARIOS.find(s => s.id === activeBtn.dataset.id);
+  currentStep = 0; totalScore = 0; stepScores = [];
+  maxScore = currentScenario.steps.length * 2;
+  document.getElementById('client-name').textContent = currentScenario.clientName;
+  document.getElementById('scenario-label-sim').textContent = currentScenario.title;
+  showScreen('sim-screen');
+  renderStep();
+}
+
+function renderStep() {
+  const step = currentScenario.steps[currentStep];
+  const total = currentScenario.steps.length;
+  document.getElementById('step-label').textContent = `Etapa ${currentStep + 1} de ${total}`;
+  document.getElementById('score-label').textContent = `Puntos: ${totalScore}`;
+  document.getElementById('progress-fill').style.width = `${(currentStep / total) * 100}%`;
+  const tagWrap = document.getElementById('objection-tag-wrap');
+  tagWrap.innerHTML = step.objectionTag ? `<div class="objection-tag">⚠ ${step.objectionTag}</div>` : '';
+  document.getElementById('client-says').textContent = step.clientSays;
+  document.getElementById('stage-label').textContent = step.stage;
+  const grid = document.getElementById('options-grid');
+  grid.innerHTML = '';
+  step.options.forEach(opt => {
+    const btn = document.createElement('button');
+    btn.className = 'option-btn';
+    btn.innerHTML = `<span class="option-letter">${opt.letter}</span><span>${opt.text}</span>`;
+    btn.addEventListener('click', () => selectOption(opt, btn));
+    grid.appendChild(btn);
+  });
+  document.getElementById('feedback-box').style.display = 'none';
+  document.getElementById('btn-next').style.display = 'none';
+}
+
+function selectOption(opt, clickedBtn) {
+  document.querySelectorAll('.option-btn').forEach(b => b.classList.add('disabled'));
+  const typeClass = { correct:'selected-correct', partial:'selected-partial', wrong:'selected-wrong' }[opt.type];
+  clickedBtn.classList.remove('disabled');
+  clickedBtn.classList.add(typeClass);
+  if (opt.type !== 'correct') {
+    const best = currentScenario.steps[currentStep].options.find(o => o.type === 'correct');
+    document.querySelectorAll('.option-btn').forEach(b => {
+      if (b.querySelector('.option-letter').textContent === best.letter) b.classList.add('best-answer');
+    });
+  }
+  totalScore += opt.score;
+  stepScores.push({ stage: currentScenario.steps[currentStep].stage, score: opt.score, max: 2 });
+  const fb = document.getElementById('feedback-box');
+  fb.className = 'feedback-box ' + opt.type;
+  const icons = { correct:'✓ Muy bien', partial:'◑ Puede mejorar', wrong:'✗ Oportunidad de mejora' };
+  document.getElementById('feedback-top').textContent = icons[opt.type];
+  document.getElementById('feedback-text').textContent = opt.feedback;
+  document.getElementById('client-reaction').textContent = 'Cliente: ' + opt.reaction;
+  fb.style.display = 'block';
+  document.getElementById('score-label').textContent = `Puntos: ${totalScore}`;
+  const btnNext = document.getElementById('btn-next');
+  btnNext.style.display = 'block';
+  btnNext.textContent = currentStep < currentScenario.steps.length - 1 ? 'Siguiente etapa →' : 'Ver mi resultado →';
+}
+
+function nextStep() {
+  currentStep++;
+  if (currentStep >= currentScenario.steps.length) showResults();
+  else { renderStep(); window.scrollTo({ top: 0, behavior: 'smooth' }); }
+}
+
+function showResults() {
+  const pct = Math.round((totalScore / maxScore) * 100);
+  const circ = 2 * Math.PI * 42;
+  const arc = document.getElementById('score-arc');
+  setTimeout(() => {
+    arc.style.strokeDashoffset = circ - (pct / 100) * circ;
+    arc.style.stroke = pct >= 75 ? '#1A7A4A' : pct >= 50 ? '#B07800' : '#C4321A';
+  }, 100);
+  const scoreEl = document.getElementById('final-score');
+  scoreEl.textContent = pct;
+  scoreEl.style.color = pct >= 75 ? '#1A7A4A' : pct >= 50 ? '#B07800' : '#C4321A';
+  let title, diag;
+  if (pct >= 85) { title = '¡Excelente desempeño!'; diag = `${agentName}, dominaste el proceso de venta y el manejo de objeciones. Estás listo para atender clientes reales con confianza.`; }
+  else if (pct >= 65) { title = 'Buen trabajo, sigue mejorando'; diag = `${agentName}, tienes una base sólida. Algunos pasos del proceso técnico y el manejo de objeciones pueden fortalecerse.`; }
+  else if (pct >= 40) { title = 'En desarrollo'; diag = `${agentName}, vas por buen camino pero necesitas practicar más el proceso técnico y la respuesta a objeciones.`; }
+  else { title = 'Necesitas más práctica'; diag = `${agentName}, te recomendamos repasar los fundamentos del proceso de venta y volver a intentarlo.`; }
+  document.getElementById('result-title').textContent = title;
+  document.getElementById('result-diag').textContent = diag;
+  const bl = document.getElementById('breakdown-list');
+  bl.innerHTML = '';
+  stepScores.forEach(s => {
+    const cls = s.score === 2 ? 'full' : s.score === 1 ? 'half' : 'zero';
+    const ptsCls = s.score === 2 ? 'pts-full' : s.score === 1 ? 'pts-half' : 'pts-zero';
+    bl.innerHTML += `<div class="breakdown-item"><div class="dot ${cls}"></div><div class="breakdown-step">${s.stage}</div><div class="breakdown-pts ${ptsCls}">${s.score} / ${s.max} pts</div></div>`;
+  });
+  const tl = document.getElementById('tips-list');
+  const missed = stepScores.filter(s => s.score < 2);
+  if (missed.length === 0) {
+    tl.innerHTML = '<div class="tip-item">¡Sin áreas de mejora en este ejercicio! Considera practicar otro escenario.</div>';
+  } else {
+    missed.forEach(s => {
+      const tip = TIPS[s.stage] || 'Repasa este paso en tu material de entrenamiento.';
+      tl.innerHTML += `<div class="tip-item">${tip}</div>`;
+    });
+  }
+  showScreen('result-screen');
+}
+
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function resetSim() { showScreen('setup-screen'); }
+
+buildSetup();
+</script>
+</body>
+</html>
