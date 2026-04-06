@@ -140,8 +140,8 @@ textarea.free-input::placeholder{color:var(--ink3);}
 .btn-next:hover{background:var(--accent);}
 
 /* RESULTS */
-#result-screen{flex-direction:column;align-items:center;padding:48px 20px;}
-.result-inner{max-width:640px;width:100%;}
+#result-screen{flex-direction:column;align-items:center;padding:40px 20px 60px;}
+.result-inner{max-width:680px;width:100%;}
 .result-header{text-align:center;margin-bottom:32px;}
 .score-ring{width:120px;height:120px;margin:0 auto 18px;position:relative;}
 .score-ring svg{width:100%;height:100%;transform:rotate(-90deg);}
@@ -150,9 +150,13 @@ textarea.free-input::placeholder{color:var(--ink3);}
 .score-den{font-size:12px;color:var(--ink3);margin-top:2px;}
 .result-title{font-family:'Syne',sans-serif;font-weight:800;font-size:26px;margin-bottom:8px;}
 .result-diag{font-size:15px;color:var(--ink2);line-height:1.65;}
-.result-cards{display:flex;flex-direction:column;gap:14px;margin:24px 0;}
-.rcard{background:var(--surface);border:1.5px solid var(--border);border-radius:var(--radius);padding:18px 20px;box-shadow:var(--shadow);}
-.rcard h3{font-family:'Syne',sans-serif;font-weight:700;font-size:12px;letter-spacing:.5px;color:var(--ink);margin-bottom:12px;padding-bottom:8px;border-bottom:1px solid var(--border);}
+
+.result-cards{display:flex;flex-direction:column;gap:14px;margin:28px 0;}
+.rcard{background:var(--surface);border:1.5px solid var(--border);border-radius:var(--radius);padding:20px 22px;box-shadow:var(--shadow);}
+.rcard h3{font-family:'Syne',sans-serif;font-weight:700;font-size:11px;letter-spacing:1.2px;text-transform:uppercase;color:var(--ink3);margin-bottom:14px;padding-bottom:9px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:7px;}
+.rcard h3 .ricon{font-size:14px;}
+
+/* Detalle por etapa */
 .bklist{display:flex;flex-direction:column;gap:9px;}
 .bkitem{display:flex;align-items:center;gap:10px;font-size:13.5px;}
 .bkstage{flex:1;color:var(--ink);}
@@ -160,10 +164,46 @@ textarea.free-input::placeholder{color:var(--ink3);}
 .pts-full{color:var(--green);} .pts-half{color:var(--yellow);} .pts-zero{color:var(--red);}
 .dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
 .dot.full{background:var(--green);} .dot.half{background:var(--yellow);} .dot.zero{background:var(--red);}
-.tips-list{display:flex;flex-direction:column;gap:8px;}
-.tip-item{font-size:13px;color:var(--ink2);line-height:1.6;padding-left:14px;position:relative;}
-.tip-item::before{content:'→';position:absolute;left:0;color:var(--accent);font-weight:700;}
-.btn-retry{width:100%;background:var(--ink);color:#F5F3EE;border:none;border-radius:var(--radius);padding:16px;font-family:'Syne',sans-serif;font-weight:700;font-size:16px;cursor:pointer;transition:all .18s;}
+
+/* Qué faltó mejorar */
+.mejora-list{display:flex;flex-direction:column;gap:10px;}
+.mejora-item{display:flex;gap:10px;font-size:13.5px;line-height:1.55;color:var(--ink2);padding:10px 12px;background:var(--surface2);border-radius:9px;}
+.mejora-item .mi-icon{font-size:15px;flex-shrink:0;margin-top:1px;}
+.mejora-item strong{color:var(--ink);display:block;margin-bottom:2px;font-size:13px;}
+
+/* Riesgos */
+.riesgo-list{display:flex;flex-direction:column;gap:8px;}
+.riesgo-item{display:flex;gap:10px;align-items:flex-start;font-size:13.5px;line-height:1.55;color:var(--ink2);padding:10px 12px;background:var(--red-light);border:1px solid rgba(196,50,26,.15);border-radius:9px;}
+.riesgo-item .ri-icon{flex-shrink:0;font-size:15px;margin-top:1px;}
+.no-riesgos{font-size:13.5px;color:var(--green);background:var(--green-light);border:1px solid rgba(26,122,74,.15);border-radius:9px;padding:10px 14px;}
+
+/* Respuestas sugeridas */
+.sugerida-list{display:flex;flex-direction:column;gap:14px;}
+.sugerida-item{border-radius:10px;overflow:hidden;border:1.5px solid var(--border);}
+.sug-objecion{background:var(--surface2);padding:9px 14px;font-size:12px;font-weight:600;color:var(--ink2);letter-spacing:.3px;}
+.sug-wrong{background:var(--red-light);padding:10px 14px;font-size:13px;color:var(--red);line-height:1.5;}
+.sug-wrong span{font-weight:600;display:block;margin-bottom:2px;font-size:11px;letter-spacing:.5px;text-transform:uppercase;}
+.sug-correct{background:var(--green-light);padding:10px 14px;font-size:13px;color:var(--green);line-height:1.5;}
+.sug-correct span{font-weight:600;display:block;margin-bottom:2px;font-size:11px;letter-spacing:.5px;text-transform:uppercase;}
+
+/* Checklist técnico */
+.checklist-table{width:100%;border-collapse:collapse;}
+.checklist-table th{font-size:11px;font-weight:600;letter-spacing:.5px;color:var(--ink3);text-align:left;padding:6px 10px;border-bottom:1.5px solid var(--border);}
+.checklist-table th:last-child{text-align:center;width:120px;}
+.checklist-table td{font-size:13.5px;padding:10px 10px;border-bottom:1px solid var(--border);color:var(--ink);vertical-align:middle;}
+.checklist-table tr:last-child td{border-bottom:none;}
+.checklist-table td:last-child{text-align:center;}
+.ck-yes{display:inline-flex;align-items:center;gap:4px;font-size:12px;font-weight:600;color:var(--green);background:var(--green-light);padding:3px 10px;border-radius:20px;}
+.ck-partial{display:inline-flex;align-items:center;gap:4px;font-size:12px;font-weight:600;color:var(--yellow);background:var(--yellow-light);padding:3px 10px;border-radius:20px;}
+.ck-no{display:inline-flex;align-items:center;gap:4px;font-size:12px;font-weight:600;color:var(--red);background:var(--red-light);padding:3px 10px;border-radius:20px;}
+.ck-na{display:inline-flex;align-items:center;gap:4px;font-size:12px;font-weight:500;color:var(--ink3);background:var(--surface2);padding:3px 10px;border-radius:20px;}
+
+/* Recomendación */
+.reco-box{background:linear-gradient(135deg,#EBF0FF 0%,#F5F3EE 100%);border:1.5px solid rgba(45,91,227,.2);border-radius:10px;padding:16px 18px;}
+.reco-box p{font-size:14px;color:var(--ink);line-height:1.7;}
+.reco-box strong{color:var(--accent);}
+
+.btn-retry{width:100%;background:var(--ink);color:#F5F3EE;border:none;border-radius:var(--radius);padding:16px;font-family:'Syne',sans-serif;font-weight:700;font-size:16px;cursor:pointer;transition:all .18s;margin-top:4px;}
 .btn-retry:hover{background:var(--accent);transform:translateY(-1px);}
 
 @media(max-width:560px){.scenarios-grid{grid-template-columns:1fr;}.setup-intro h1{font-size:30px;}.bubble{max-width:88%;}}
@@ -225,6 +265,8 @@ textarea.free-input::placeholder{color:var(--ink3);}
 <!-- RESULTS -->
 <div id="result-screen" class="screen">
   <div class="result-inner">
+
+    <!-- Score header -->
     <div class="result-header">
       <div class="score-ring">
         <svg viewBox="0 0 100 100">
@@ -241,9 +283,53 @@ textarea.free-input::placeholder{color:var(--ink3);}
       <div class="result-title" id="result-title">—</div>
       <div class="result-diag" id="result-diag">—</div>
     </div>
+
     <div class="result-cards">
-      <div class="rcard"><h3>Detalle por etapa</h3><div class="bklist" id="bklist"></div></div>
-      <div class="rcard"><h3>Puntos de mejora</h3><div class="tips-list" id="tips-list"></div></div>
+
+      <!-- 1. Detalle por etapa -->
+      <div class="rcard">
+        <h3><span class="ricon">📊</span> Detalle por etapa</h3>
+        <div class="bklist" id="bklist"></div>
+      </div>
+
+      <!-- 2. Qué faltó mejorar -->
+      <div class="rcard">
+        <h3><span class="ricon">🔧</span> ¿Qué faltó mejorar?</h3>
+        <div class="mejora-list" id="mejora-list"></div>
+      </div>
+
+      <!-- 3. Riesgos detectados -->
+      <div class="rcard">
+        <h3><span class="ricon">⚠️</span> Riesgos detectados</h3>
+        <div class="riesgo-list" id="riesgo-list"></div>
+      </div>
+
+      <!-- 4. Checklist del proceso técnico -->
+      <div class="rcard">
+        <h3><span class="ricon">✅</span> Checklist del proceso técnico</h3>
+        <table class="checklist-table">
+          <thead>
+            <tr>
+              <th>Elemento del proceso</th>
+              <th>¿Lo mencionaste?</th>
+            </tr>
+          </thead>
+          <tbody id="checklist-body"></tbody>
+        </table>
+      </div>
+
+      <!-- 5. Respuestas sugeridas -->
+      <div class="rcard">
+        <h3><span class="ricon">💬</span> Respuestas sugeridas</h3>
+        <div class="sugerida-list" id="sugerida-list"></div>
+      </div>
+
+      <!-- 6. Recomendación -->
+      <div class="rcard">
+        <h3><span class="ricon">🎯</span> Recomendación para tu siguiente práctica</h3>
+        <div class="reco-box"><p id="reco-text">—</p></div>
+      </div>
+
     </div>
     <button class="btn-retry" onclick="resetSim()">← Intentar de nuevo</button>
   </div>
@@ -762,6 +848,7 @@ function startSim() {
   state.scenario = SCENARIOS.find(s => s.id === activeBtn.dataset.id);
   state.step = 0; state.totalScore = 0; state.stepScores = [];
   state.maxScore = state.scenario.steps.length * 2;
+  state.allAgentResponses = [];
   document.getElementById('disp-name').textContent = state.agentName;
   document.getElementById('disp-scenario').textContent = state.scenario.title;
   document.getElementById('chat-area').innerHTML = '';
@@ -869,6 +956,7 @@ function selectMulti(opt, clickedBtn, step, list) {
     });
   }
   addAgentBubble(opt.text);
+  state.allAgentResponses.push(opt.text);
   addFeedback(opt.type, opt.fb, opt.type !== 'correct' ? opt.reaction : null);
   if (opt.type !== 'wrong') addClientReaction(opt.reaction);
 
@@ -921,6 +1009,7 @@ function submitFree() {
   });
 
   addAgentBubble(text);
+  state.allAgentResponses.push(text);
   state.retries++;
 
   if (hits.length >= step.minHits) {
@@ -977,6 +1066,102 @@ function updateProgress() {
 // ═══════════════════════════════════════════════════════════
 // RESULTS
 // ═══════════════════════════════════════════════════════════
+
+// Checklist técnico: qué keywords mapean a qué elemento
+const TECH_CHECKLIST = [
+  {
+    label: 'Verificación de equipo liberado',
+    keys: ['liberado','libre','verifico el equipo','reviso el equipo','verificar equipo'],
+    portabilityOnly: false
+  },
+  {
+    label: 'Compatibilidad del equipo',
+    keys: ['compatible','compatibilidad','4g','lte','funciona con','red'],
+    portabilityOnly: false
+  },
+  {
+    label: 'Activación de la SIM con oferta',
+    keys: ['activo','activa','activación','plan','oferta','sim'],
+    portabilityOnly: false
+  },
+  {
+    label: 'Inserción correcta del chip',
+    keys: ['inserto','inserta','chip','ranura','inserción','insertar'],
+    portabilityOnly: false
+  },
+  {
+    label: 'Envío de SMS al 52142 con SALDO',
+    keys: ['sms','52142','saldo','mensaje de texto','validar','validación'],
+    portabilityOnly: false
+  },
+  {
+    label: 'Explicación del proceso de portabilidad',
+    keys: ['portabilidad','transitorio','temporal','número temporal','conserva su número','mismo número','no pierde su número'],
+    portabilityOnly: true
+  },
+  {
+    label: 'Confirmación final del servicio',
+    keys: ['confirma','confirmación','servicio activo','beneficios','quedó bien','activos'],
+    portabilityOnly: false
+  }
+];
+
+// Riesgos por etapa no cubierta
+const RIESGOS_MAP = {
+  'Verificación del equipo':  'Si el equipo no está liberado y se activa, el cliente no tendrá servicio. Generará una reclamación inmediata.',
+  'Verificación y activación':'Si el equipo no está verificado antes de activar, existe riesgo de una activación fallida.',
+  'Activación':               'Sin explicar los pasos, el cliente puede no entender el proceso y desconfiar si algo falla.',
+  'Proceso de activación':    'Omitir la activación formal del plan puede dejar al cliente sin los beneficios contratados.',
+  'Activación y validación':  'Sin validación del servicio, el cliente puede descubrir solo que algo falló, causando baja satisfacción.',
+  'Activación y cierre':      'Un proceso incompleto de activación puede resultar en datos o llamadas no disponibles.',
+  'Validación del servicio':  'Sin el SMS de validación el agente no puede garantizar que los beneficios se aplicaron correctamente.',
+  'Validación exprés':        'Omitir la validación por la prisa del cliente es el error más común que genera tickets de soporte al día siguiente.',
+  'Validación final':         'Sin validar el servicio, el cliente puede irse sin certeza de que todo quedó activo.',
+  'Portabilidad':             'No explicar el número transitorio genera miedo y puede cancelar la venta en el último momento.',
+  'Proceso de portabilidad':  'Un cliente que no entiende la portabilidad puede cancelar si cree que perderá su número.',
+  'Portabilidad exprés':      'Saltarse la explicación de portabilidad puede generar una llamada de pánico cuando el cliente vea un número diferente.',
+  'Objeción: precio':         'No manejar correctamente la objeción de precio puede llevar al cliente a irse con la competencia.',
+  'Manejo del miedo al cambio':'No validar el miedo del cliente puede hacer que se vaya sin decidir y no regrese.',
+  'Propuesta y cierre':       'No pedir el compromiso después de resolver las dudas deja la venta abierta e inconclusa.',
+  'Cierre consultivo':        'Sin pedir el compromiso explícito, el cliente puede "pensarlo" y no volver.',
+  'Cierre rápido':            'Con un cliente de prisa, no dar un tiempo exacto puede hacerlo desistir.',
+  'Cierre':                   'No explicar el proceso de cierre puede generar desconfianza en el último momento.',
+};
+
+// Respuestas sugeridas por tipo de objeción
+const SUGERIDAS = {
+  'Objeción de precio': {
+    objecion: 'Cliente: "En otro lado me dan más por menos dinero."',
+    wrong: 'No sé lo que ofrecen, pero nosotros somos mejores.',
+    correct: '"Entiendo. ¿Me puede decir exactamente qué le ofrecieron? Así puedo comparar punto a punto y asegurarme de que sea una comparación justa, porque a veces la cobertura o la letra chica marcan la diferencia."'
+  },
+  'Objeción de portabilidad': {
+    objecion: 'Cliente: "Me da miedo perder mi número, lo tengo hace años."',
+    wrong: 'No se preocupe, el proceso es sencillo.',
+    correct: '"Su número lo conserva completamente. Durante el proceso le asignamos un número temporal para que nunca quede incomunicado. Al finalizar la portabilidad, ese número temporal se reemplaza por su número original. Usted sale de aquí con su mismo número."'
+  },
+  'Objeción de desconfianza': {
+    objecion: 'Cliente: "No conozco bien esta compañía, ¿cómo sé que funciona?"',
+    wrong: 'Somos una empresa muy buena, no se preocupe.',
+    correct: '"Es una pregunta muy válida. Nuestra red tiene cobertura 4G LTE en el 95% del territorio nacional. Dígame su colonia y verifico ahora mismo si tiene señal en su zona específica."'
+  },
+  'Objeción de compatibilidad': {
+    objecion: 'Cliente: "No sé si mi celular funciona con su SIM."',
+    wrong: 'Con cualquier celular moderno funciona, no se preocupe.',
+    correct: '"Lo verificamos ahorita mismo, es menos de un minuto. ¿Me permite ver su equipo? Reviso si está liberado y si es compatible con nuestra red 4G. Así no tomamos ningún riesgo."'
+  },
+  'Objeción de tiempo': {
+    objecion: 'Cliente: "No tengo mucho tiempo para todo este proceso."',
+    wrong: 'Es rápido, no se preocupe.',
+    correct: '"El proceso completo aquí en el punto de venta toma unos 10 minutos: verifico el equipo, activo su SIM, insertamos el chip y validamos el servicio. Si quiere portabilidad, eso corre en paralelo y usted no tiene que esperar aquí."'
+  },
+  'Objeción de cambio': {
+    objecion: 'Cliente: "Mejor lo pienso, no me quiero apresurar."',
+    wrong: '¡No lo deje para después, la oferta puede cambiar!',
+    correct: '"Por supuesto, es una decisión importante. ¿Qué es específicamente lo que le genera duda? Quiero asegurarme de que tenga toda la información que necesita para tomar la mejor decisión para usted, sin presiones."'
+  }
+};
+
 function showResults() {
   const pct = Math.round((state.totalScore / state.maxScore) * 100);
   const circ = 2 * Math.PI * 42;
@@ -989,32 +1174,132 @@ function showResults() {
   scoreEl.textContent = pct;
   scoreEl.style.color = pct >= 75 ? '#1A7A4A' : pct >= 50 ? '#B07800' : '#C4321A';
 
+  // Título y diagnóstico
   let title, diag;
-  if (pct >= 85) { title = '¡Excelente desempeño!'; diag = `${state.agentName}, dominaste el proceso de venta consultiva. Estás listo para atender clientes reales con confianza.`; }
-  else if (pct >= 65) { title = 'Buen trabajo'; diag = `${state.agentName}, tienes una base sólida. Refuerza el proceso técnico y el manejo de objeciones para llegar al siguiente nivel.`; }
-  else if (pct >= 40) { title = 'En desarrollo'; diag = `${state.agentName}, vas por buen camino pero necesitas más práctica en el proceso técnico y las respuestas a objeciones.`; }
-  else { title = 'Necesitas más práctica'; diag = `${state.agentName}, te recomendamos repasar el material de entrenamiento y volver a intentarlo. ¡Sigue adelante!`; }
-
+  if (pct >= 85) { title = '¡Excelente desempeño!'; diag = `${state.agentName}, dominaste el proceso de venta consultiva y el proceso técnico. Estás listo para atender clientes reales con confianza.`; }
+  else if (pct >= 65) { title = 'Buen trabajo'; diag = `${state.agentName}, tienes una base sólida. Hay algunos pasos del proceso técnico y objeciones que puedes reforzar para llegar al siguiente nivel.`; }
+  else if (pct >= 40) { title = 'En desarrollo'; diag = `${state.agentName}, vas bien pero necesitas más práctica en el proceso técnico de activación y en el manejo de objeciones clave.`; }
+  else { title = 'Necesitas más práctica'; diag = `${state.agentName}, te recomendamos repasar el material del taller y volver a intentarlo. Cada práctica te acerca al nivel que necesitas.`; }
   document.getElementById('result-title').textContent = title;
   document.getElementById('result-diag').textContent = diag;
 
+  // ── 1. DETALLE POR ETAPA ──
   const bl = document.getElementById('bklist');
   bl.innerHTML = '';
   state.stepScores.forEach(s => {
     const cls = s.score === 2 ? 'full' : s.score === 1 ? 'half' : 'zero';
     const ptsCls = s.score === 2 ? 'pts-full' : s.score === 1 ? 'pts-half' : 'pts-zero';
-    bl.innerHTML += `<div class="bkitem"><div class="dot ${cls}"></div><div class="bkstage">${escHtml(s.stage)}</div><div class="bkpts ${ptsCls}">${s.score} / ${s.max}</div></div>`;
+    const label = s.score === 2 ? '✓ Correcto' : s.score === 1 ? '◑ Parcial' : '✗ Por mejorar';
+    bl.innerHTML += `
+      <div class="bkitem">
+        <div class="dot ${cls}"></div>
+        <div class="bkstage">${escHtml(s.stage)}</div>
+        <div class="bkpts ${ptsCls}">${label}</div>
+      </div>`;
   });
 
-  const tl = document.getElementById('tips-list');
+  // ── 2. QUÉ FALTÓ MEJORAR ──
+  const ml = document.getElementById('mejora-list');
+  ml.innerHTML = '';
   const missed = state.stepScores.filter(s => s.score < 2 && s.tip);
   if (missed.length === 0) {
-    tl.innerHTML = '<div class="tip-item">¡Sin áreas de mejora detectadas! Practica otro escenario para seguir creciendo.</div>';
+    ml.innerHTML = '<div class="mejora-item"><span class="mi-icon">🎉</span><div>No se detectaron áreas de mejora significativas. ¡Excelente trabajo!</div></div>';
   } else {
     missed.forEach(s => {
-      tl.innerHTML += `<div class="tip-item">${escHtml(s.tip)}</div>`;
+      ml.innerHTML += `
+        <div class="mejora-item">
+          <span class="mi-icon">${s.score === 0 ? '❌' : '⚠️'}</span>
+          <div><strong>${escHtml(s.stage)}</strong>${escHtml(s.tip)}</div>
+        </div>`;
     });
   }
+
+  // ── 3. RIESGOS DETECTADOS ──
+  const rl = document.getElementById('riesgo-list');
+  rl.innerHTML = '';
+  const riesgosEncontrados = state.stepScores
+    .filter(s => s.score === 0)
+    .map(s => ({ stage: s.stage, riesgo: RIESGOS_MAP[s.stage] }))
+    .filter(r => r.riesgo);
+
+  if (riesgosEncontrados.length === 0) {
+    rl.innerHTML = '<div class="no-riesgos">✓ No se detectaron riesgos críticos en esta sesión. Bien hecho.</div>';
+  } else {
+    riesgosEncontrados.forEach(r => {
+      rl.innerHTML += `
+        <div class="riesgo-item">
+          <span class="ri-icon">🚨</span>
+          <div><strong style="display:block;margin-bottom:2px;font-size:12px;text-transform:uppercase;letter-spacing:.4px;color:var(--red)">${escHtml(r.stage)}</strong>${escHtml(r.riesgo)}</div>
+        </div>`;
+    });
+  }
+
+  // ── 4. CHECKLIST TÉCNICO ──
+  // Recolecta todo el texto que el agente escribió (respuestas libres) y opciones elegidas
+  const allAgentText = (state.allAgentResponses || []).join(' ').toLowerCase();
+  const scenarioId = state.scenario.id;
+  const hasPortabilidad = ['numero','caro','indeciso'].includes(scenarioId) ||
+    state.stepScores.some(s => s.stage.toLowerCase().includes('portabilidad'));
+
+  const ckBody = document.getElementById('checklist-body');
+  ckBody.innerHTML = '';
+  TECH_CHECKLIST.forEach(item => {
+    if (item.portabilityOnly && !hasPortabilidad) {
+      ckBody.innerHTML += `
+        <tr>
+          <td>✔ ${escHtml(item.label)}</td>
+          <td><span class="ck-na">— N/A</span></td>
+        </tr>`;
+      return;
+    }
+    const hits = item.keys.filter(k => allAgentText.includes(k));
+    let badge, status;
+    if (hits.length >= 2) { badge = 'ck-yes'; status = '✔ Sí'; }
+    else if (hits.length === 1) { badge = 'ck-partial'; status = '⚠️ Parcial'; }
+    else { badge = 'ck-no'; status = '❌ No'; }
+    ckBody.innerHTML += `
+      <tr>
+        <td>✔ ${escHtml(item.label)}</td>
+        <td><span class="${badge}">${status}</span></td>
+      </tr>`;
+  });
+
+  // ── 5. RESPUESTAS SUGERIDAS ──
+  const sl = document.getElementById('sugerida-list');
+  sl.innerHTML = '';
+  // Detecta qué objeciones aparecieron en el escenario
+  const objTags = state.scenario.steps
+    .filter(s => s.objTag)
+    .map(s => s.objTag);
+  const uniqueTags = [...new Set(objTags)];
+  const shown = uniqueTags.filter(tag => SUGERIDAS[tag]);
+
+  if (shown.length === 0) {
+    sl.innerHTML = '<div style="font-size:13.5px;color:var(--ink2);">No se detectaron objeciones específicas en este escenario.</div>';
+  } else {
+    shown.forEach(tag => {
+      const s = SUGERIDAS[tag];
+      sl.innerHTML += `
+        <div class="sugerida-item">
+          <div class="sug-objecion">${escHtml(tag)} · ${escHtml(s.objecion)}</div>
+          <div class="sug-wrong"><span>Lo que no funciona</span>"${escHtml(s.wrong)}"</div>
+          <div class="sug-correct"><span>Respuesta sugerida</span>${escHtml(s.correct)}</div>
+        </div>`;
+    });
+  }
+
+  // ── 6. RECOMENDACIÓN ──
+  const recos = [
+    { cond: pct < 50, text: `<strong>Prioridad:</strong> Antes de tu próxima práctica, repasa el proceso técnico completo de activación: verificación del equipo → activación con oferta → inserción del chip → validación con SMS. Es el esqueleto de cada venta.` },
+    { cond: state.stepScores.filter(s=>s.score===0 && s.stage.toLowerCase().includes('validación')).length > 0, text: `<strong>Enfócate en la validación:</strong> En tu próxima práctica, practica específicamente el cierre con validación. Antes de despedirte del cliente, siempre pídele que envíe el SMS de validación. Esos 30 segundos evitan el 70% de las reclamaciones post-venta.` },
+    { cond: state.stepScores.filter(s=>s.score===0 && s.stage.toLowerCase().includes('objeción')).length > 0, text: `<strong>Trabaja el manejo de objeciones:</strong> Cuando un cliente presente una objeción, recuerda la fórmula: (1) Valida su preocupación, (2) haz una pregunta para entender mejor, (3) da un dato concreto, (4) propón el siguiente paso. Practica este flujo en espejo con un compañero.` },
+    { cond: state.stepScores.filter(s=>s.score===0 && s.stage.toLowerCase().includes('portabilidad')).length > 0, text: `<strong>Domina la portabilidad:</strong> Practica explicar el número transitorio de corrido, sin dudar. El cliente necesita escucharte seguro: "Le asignamos un número temporal, su número original lo recupera al finalizar el proceso y nunca queda incomunicado."` },
+    { cond: pct >= 85, text: `<strong>¡Sigue así!</strong> Para tu siguiente práctica, elige el escenario "Cliente indeciso" o el de "Cliente con prisa" — son los más exigentes. También puedes practicar responder objeciones de precio con comparativas reales de planes.` },
+    { cond: true, text: `<strong>Siguiente paso:</strong> Practica este mismo escenario una vez más intentando obtener 2 puntos en cada etapa desde el primer intento. El objetivo es que tu primera respuesta siempre sea la correcta, como en una venta real donde no hay segunda oportunidad.` }
+  ];
+  const reco = recos.find(r => r.cond);
+  document.getElementById('reco-text').innerHTML = reco ? reco.text : recos[recos.length-1].text;
+
   showScreen('result-screen');
 }
 
